@@ -7,7 +7,7 @@ pub struct Field {
 }
 
 #[derive(Debug, PartialEq, Copy, Clone)]
-enum Opcode {
+pub enum Opcode {
     CMov,
     Load,
     Store,
