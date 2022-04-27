@@ -1,0 +1,1 @@
+/Users/tuyet/Documents/S22/CSC411/Lab/Lab9-RumAsm/rumasm/target/release/halt: /Users/tuyet/Documents/S22/CSC411/Lab/Lab9-RumAsm/rumasm/src/bin/halt.rs /Users/tuyet/Documents/S22/CSC411/Lab/Lab9-RumAsm/rumasm/src/lib.rs /Users/tuyet/Documents/S22/CSC411/Lab/Lab9-RumAsm/rumasm/src/rumasm.rs
