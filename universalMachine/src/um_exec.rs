@@ -20,20 +20,40 @@ struct Machine {
     registers: [u32; 8]
 }
 
+/*
+Some of this stuff is shaping up weird, so let's consider using bitpack like this
+
+let inst = instruction as u64;
+let a = bitpack::bitpack::getu(inst, 3, 6).try_into().unwrap();
+let b = bitpack::bitpack::getu(inst, 3, 3).try_into().unwrap();
+let c = bitpack::bitpack::getu(inst, 3, 0).try_into().unwrap();
+
+*/
+
 impl Machine {
     // initialize a new machine struct with a given set of instruction
     fn new(instructions: Vec<u32>) -> Machine {
-        todo!()
+        Machine {
+            
+        }
     }
 
     // get a machine's given instruction at a particular program counter position
     fn get_instruction(&self, pc: u32) -> Instruction {
-        todo!()
+        self.memory.get_instruction(pc)
     }
 
     // opcode 1 - if $r[C] != 0 then $r[A] := $r[B]
     fn cmov(&mut self, instruction: Instruction) {
-        todo!()
+        let a = instruction.a as usize;
+        let b = instruction.b.unwrap() as usize;
+        let c = instruction.c.unwrap() as usize;
+
+        if self.registers.get(c) != 0 {
+            let value = self.registers.get(b);
+            self.registers.set(a, value);
+        }
+        
     }
 
     // opcode 1 - $r[A] := $m[$r[B]][$r[C]]
@@ -48,38 +68,72 @@ impl Machine {
 
     // opcode 3 - $r[A] := ($r[B] + $r[C]) % 2^32
     fn add(&mut self, instruction: Instruction) {
-        todo!()
+        let a = instruction.a as usize;
+        let b = instruction.b.unwrap() as usize;
+        let c = instruction.c.unwrap() as usize;
+
+        let value = self.registers.get(b).wrapping_add(self.registers.get(c));
+
+        self.registers.set(a, value);
     }
 
     // opcode 4 - $r[A] := ($r[B] × $r[C]) % 2^32
     fn mul(&mut self, instruction: Instruction) {
-        todo!()
+        let a = instruction.a as usize;
+        let b = instruction.b.unwrap() as usize;
+        let c = instruction.c.unwrap() as usize;
+
+        let value = self.registers.get(b).wrapping_mul(self.registers.get(c));
+
+        self.registers.set(a, value);
     }
 
     // opcode 5 - $r[A] := ($r[B] ÷ $r[C]) (integer division)
     fn div(&mut self, instruction: Instruction) {
-        todo!()
+        let a = instruction.a as usize;
+        let b = instruction.b.unwrap() as usize;
+        let c = instruction.c.unwrap() as usize;
+
+        let value = self.registers.get(b).wrapping_div(self.registers.get(c));
+        self.registers.set(a, value);
     }
 
     // opcode 6 - $r[A] :=¬($r[B]∧$r[C])
     fn nand(&mut self, instruction: Instruction) {
-        todo!()
+        let a = instruction.a as usize;
+        let b = instruction.b.unwrap() as usize;
+        let c = instruction.c.unwrap() as usize;
+
+        let value = !(self.registers.get(b) & self.registers.get(c));
+
+        self.registers.set(a, value);
     }
 
     // DO WE NEEd THIS? or in 'main', we can call an exit instead?
     // opcode 7 - halt computation
     fn halt(&mut self, instruction: Instruction) {
+        // we could add a break? Or maybe just have it in main lol
         todo!()
     }
 
     // opcode 8 - new segment is created with a number of words equal to the value in $r[C]
     fn map_segment(&mut self, instruction: Instruction) {
-        todo!()
+        let b = instruction.b.unwrap() as usize;
+        let c = instruction.c.unwrap() as usize;
+
+        let size = self.registers.get(c) as usize;
+
+        let address = self.memory.map_segment(size);
+
+        self.registers.set(b, address as u32);
     }
 
     // opcode 9 - segment $m[$r[C]] is unmapped
     fn unmap_segment(&mut self, instruction: Instruction) {
-        todo!()
+        let c = instruction.c.unwrap() as usize;
+        let address = self.registers.get(c) as usize;
+
+        self.memory.unmap_segment(address);
     }
 
     // opcode 10 - value in $r[C] is displayed on the I/O
