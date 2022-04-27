@@ -21,7 +21,8 @@ pub enum Opcode {
     Output,
     Input,
     LoadProgram,
-    LoadValue
+    LoadValue,
+    Err
 }
 
 
