@@ -165,10 +165,8 @@ impl Machine {
     // Only values from 0 to 255 are allowed
     pub fn output(&self, instruction: Instruction) {
         let c = instruction.c.unwrap() as usize;
-
-        let value = self.registers.get(c).unwrap();
-
-        let byte = *value as u8;
+        let value = self.registers[c];
+        let byte = value as u8;
         stdout().write(&[byte]).unwrap();
     }
 
@@ -209,7 +207,6 @@ impl Machine {
     pub fn load_value(&mut self, instruction: Instruction) {
         let a = instruction.a as usize;
         let value = instruction.value.unwrap();
-
         self.registers[a] = value;
     }
 }

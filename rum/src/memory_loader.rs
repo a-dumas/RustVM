@@ -53,7 +53,7 @@ impl Instruction {
         let (a, value) = 
             if op == Opcode::LoadValue {
                 (getu(instruction as u64, 3, 25) as u32, 
-                Some(getu(instruction as u64, 3, 25) as u32))
+                Some(getu(instruction as u64, 25, 0) as u32))
             } else {
                 (getu(instruction as u64, 3, 6) as u32,
                 None)

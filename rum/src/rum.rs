@@ -5,7 +5,7 @@ use std::{env, process};
 use std::fs::File;
 use std::io::{Cursor, Read};
 use byteorder::{BigEndian, ReadBytesExt};
-pub use um_exec::Machine;
+use rum::um_exec::Machine;
 use rumdump::rumdis::Opcode;
 
 // structure to represent the machine (with memory emulation and registers)
