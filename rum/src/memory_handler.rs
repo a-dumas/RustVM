@@ -14,7 +14,7 @@ pub struct Memory {
     free_addresses: Vec<u32>,
 
     // heap of memory segments
-    pub heap: Vec<Vec<u32>>,
+    heap: Vec<Vec<u32>>,
 }
 
 impl Memory {
