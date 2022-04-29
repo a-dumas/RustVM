@@ -6,8 +6,6 @@
 // div
 // nand
 
-// return will be something like self.registers.set(inst, value)
-
 pub use crate::memory_handler::{Memory,PROGRAM_ADDRESS};
 pub use crate::memory_loader::Instruction;
 use std::io::{Read, stdout, stdin, Write};
@@ -45,15 +43,15 @@ impl Machine {
         self.memory.get_instruction(pc)
     }
 
-    // opcode 1 - if $r[C] != 0 then $r[A] := $r[B]
+    // opcode 0 - if $r[C] != 0 then $r[A] := $r[B]
     pub fn cmov(&mut self, instruction: Instruction) {
         let a = instruction.a as usize;
         let b = instruction.b.unwrap() as usize;
         let c = instruction.c.unwrap() as usize;
 
-        if self.registers.get(c).unwrap() != &0 {
-            let value = self.registers.get(b).unwrap();
-            self.registers[a] = *value;
+        if self.registers[c] != 0 {
+            let value = self.registers[b];
+            self.registers[a] = value;
         }
         
     }
@@ -95,7 +93,7 @@ impl Machine {
         let b = instruction.b.unwrap() as usize;
         let c = instruction.c.unwrap() as usize;
 
-        let value = (self.registers[b] + self.registers[c]) % 2^32;
+        let value = ((self.registers[b] as u64 + self.registers[c] as u64) % 2^32) as u32;
 
         self.registers[a] = value;
     }
@@ -106,7 +104,7 @@ impl Machine {
         let b = instruction.b.unwrap() as usize;
         let c = instruction.c.unwrap() as usize;
 
-        let value = (self.registers[b] * self.registers[c]) % 2^32;
+        let value = ((self.registers[b] as u64 * self.registers[c] as u64) % 2^32) as u32;
 
         self.registers[a] = value;
     }
@@ -175,9 +173,9 @@ impl Machine {
     pub fn input(&mut self, instruction: Instruction) {
         let c = instruction.c.unwrap() as usize;
 
-        let stdin = stdin();
+        // let stdin = stdin();
 
-        match stdin.bytes().next().unwrap() { // EOF will be None
+        match stdin().bytes().next().unwrap() { // EOF will be None
             Ok(value) => {
                 if value as char == '\n' {
                     self.registers[c] = std::u32::MAX;
@@ -185,7 +183,7 @@ impl Machine {
                     self.registers[c] = value as u32;
                 }
             },
-            Err(e) => panic!("Encountered error while reading input: {}", e)
+            Err(e) => panic!("Error while reading input: {}", e)
         }
     }
 
@@ -195,11 +193,10 @@ impl Machine {
         let c = instruction.c.unwrap() as usize;
 
         let address = self.registers[b] as usize;
-
         if address != PROGRAM_ADDRESS {
             self.memory.load(address);
         }
-
+        // eprintln!("LOAD PROGRAM RC: {}", self.registers[c] as usize);
         self.registers[c]
     }
 
@@ -207,6 +204,8 @@ impl Machine {
     pub fn load_value(&mut self, instruction: Instruction) {
         let a = instruction.a as usize;
         let value = instruction.value.unwrap();
+        // eprintln!("LOAD VALUE RA: {}", self.registers[a] as usize);
+
         self.registers[a] = value;
     }
 }

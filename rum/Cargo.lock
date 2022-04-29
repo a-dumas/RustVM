@@ -80,14 +80,6 @@ version = "0.1.0"
 dependencies = [
  "bitpack",
  "byteorder",
- "rumdump",
-]
-
-[[package]]
-name = "rumdump"
-version = "0.1.0"
-dependencies = [
- "bitpack",
 ]
 
 [[package]]

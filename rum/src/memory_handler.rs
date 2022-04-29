@@ -2,18 +2,19 @@
 // u32 for each identifier and Vec<u32> for the actual space
 
 pub use crate::memory_loader::Instruction;
-// use std::mem;
+use std::mem;
 
 // Global Variables
 pub const PROGRAM_ADDRESS: usize = 0;
 
 // structure to emulate a memory space
+#[derive(Debug)]
 pub struct Memory {
     // stack of reusable memory addresses
     free_addresses: Vec<u32>,
 
-    // heap of reusable memory locations
-    heap: Vec<Vec<u32>>,
+    // heap of memory segments
+    pub heap: Vec<Vec<u32>>,
 }
 
 impl Memory {
@@ -33,15 +34,28 @@ impl Memory {
             (self.heap.len() - 1) as u32
 
         } else {
-            let address = self.free_addresses
-                .pop()
+            let address = self.free_addresses.pop()
                 .expect("Currently no free addresses available for reuse");
 
-            // mem::replace(
+            /*  
+            mem::replace(
             let vec = self.heap.get_mut(address as usize)
                         .expect("Memory address is not allocated");
             *vec = zeros_vec;
             // );
+            
+
+            let _unused = mem::replace(self.heap.get_mut(address as usize)
+                            .expect("Memory address is not allocated"), zeros_vec);
+            
+            let vec = self.heap.get_mut(address as usize)
+                .expect("Memory address is not allocated");
+            *vec = zeros_vec;
+            */
+
+            let _unused = mem::replace(self.heap
+                    .get_mut(address as usize)
+                    .expect("Memory address is not allocated"), zeros_vec);
 
             address
         }
@@ -51,12 +65,14 @@ impl Memory {
     pub fn deallocate(&mut self, address: u32) {
         self.free_addresses.push(address);
 
-        // mem::replace(
+        /*
         let vec = self.heap
                     .get_mut(address as usize)
                     .expect("Memory address is not allocated");
         *vec = Vec::new();
-        // );
+        */
+        let _unused = mem::replace(self.heap.get_mut(address as usize)
+            .expect("Memory address is not allocated"), Vec::new());
     }
 
     // return Some(value at a given address) if available, otherwise, return None.
@@ -69,10 +85,16 @@ impl Memory {
         let memory = self.heap.get_mut(address as usize)
             .expect("Memory is not allocated");
 
-        // mem::replace(
-        let vec = memory.get_mut(idx as usize).expect("Given index does not contain value");
+        /*
+        let vec = memory
+                    .get_mut(idx as usize)
+                    .expect("Given index does not contain value");
         *vec = value;
-        // );
+        */
+        // println!("SETTING: {:?}", memory.get(idx as usize));
+
+        let _unused = mem::replace(memory.get_mut(idx as usize)
+            .expect("Given index does not contain value"), value);
     }
 
     // load the program with the vector stored at the given address
@@ -82,11 +104,13 @@ impl Memory {
             .expect("No program found at given address")
             .clone();
 
-        // mem::replace(
+        /*
         let vec = self.heap.get_mut(PROGRAM_ADDRESS)
                     .expect("No existing program found");
         *vec = program;
-        // );
+        */
+        let _unused = mem::replace(self.heap.get_mut(PROGRAM_ADDRESS)
+            .expect("No existing program found"), program);
     }
 
     // get the instruction at given program counter
