@@ -1,0 +1,1 @@
+/Users/tuyet/Documents/S22/CSC411/Lab/Lab9-RumAsm/rumasm/target/release/librumasm.rlib: /Users/tuyet/Documents/S22/CSC411/Lab/Lab9-RumAsm/rumasm/src/lib.rs /Users/tuyet/Documents/S22/CSC411/Lab/Lab9-RumAsm/rumasm/src/rumasm.rs
